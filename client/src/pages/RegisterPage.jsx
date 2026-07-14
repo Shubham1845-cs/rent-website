@@ -23,7 +23,13 @@ export default function RegisterPage() {
       if (data.user.role === 'owner') navigate('/dashboard/owner');
       else navigate('/dashboard/tenant');
     } catch (err) {
-      setError(err.response?.data?.error || 'Registration failed. Please try again.');
+      let errMsg = 'Registration failed. Please try again.';
+      if (err.response?.data?.error) {
+        errMsg = typeof err.response.data.error === 'string' 
+          ? err.response.data.error 
+          : err.response.data.error.message || JSON.stringify(err.response.data.error);
+      }
+      setError(errMsg);
     } finally {
       setLoading(false);
     }

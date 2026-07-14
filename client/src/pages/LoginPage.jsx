@@ -25,7 +25,13 @@ export default function LoginPage() {
       else if (data.user.role === 'admin') navigate('/admin');
       else navigate('/dashboard/tenant');
     } catch (err) {
-      setError(err.response?.data?.error || 'Login failed. Please try again.');
+      let errMsg = 'Login failed. Please try again.';
+      if (err.response?.data?.error) {
+        errMsg = typeof err.response.data.error === 'string' 
+          ? err.response.data.error 
+          : err.response.data.error.message || JSON.stringify(err.response.data.error);
+      }
+      setError(errMsg);
     } finally {
       setLoading(false);
     }
