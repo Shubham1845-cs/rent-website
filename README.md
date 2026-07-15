@@ -1,3 +1,4 @@
+# Deployed website: https://rent-website-beta.vercel.app/
 # Rent & Flatmate Finder
 
 AI-powered MERN-stack platform connecting room owners with tenants using smart compatibility matching, real-time chat, and email notifications.
