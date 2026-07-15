@@ -1,4 +1,4 @@
-﻿require("dotenv").config();
+require("dotenv").config();
 const http = require("http");
 const app = require("./app");
 const { connectDB } = require("./config/db");
@@ -13,7 +13,7 @@ initSocket(httpServer);
 (async () => {
   await connectDB();
   await adminSeed();
-  httpServer.listen(PORT, () => {
-    console.log(`[server] Listening on http://localhost:${PORT}`);
+  httpServer.listen(PORT, '0.0.0.0', () => {
+    console.log(`[server] Listening on port ${PORT}`);
   });
 })();
