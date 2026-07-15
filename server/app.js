@@ -12,22 +12,28 @@ const adminRouter = require('./routes/admin');
 const app = express();
 
 // CORS must be first so all REST routes and the Socket.io upgrade are covered
-const allowedOrigins = (process.env.CLIENT_URLS || '')
+// Support CLIENT_URLS (comma-separated list) OR fallback to CLIENT_URL (single)
+const rawOrigins = process.env.CLIENT_URLS || process.env.CLIENT_URL || '';
+const allowedOrigins = rawOrigins
   .split(',')
   .map(s => s.trim())
   .filter(Boolean);
 
-app.use(cors({
+const corsOptions = {
   origin: (origin, callback) => {
-    // allow requests with no origin (curl/Postman/server-to-server)
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error(`Origin ${origin} not allowed by CORS`));
-    }
+    // Allow requests with no origin (curl / Postman / server-to-server)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    return callback(new Error(`Origin ${origin} not allowed by CORS`));
   },
-  credentials: true, // only needed if you use cookies for auth
-}));
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+
+// Handle preflight (OPTIONS) requests for all routes
+app.options('*', cors(corsOptions));
+app.use(cors(corsOptions));
 
 app.use(express.json());
 

@@ -5,10 +5,17 @@ const ChatMessage = require('./models/ChatMessage');
 const { buildChatSessionId } = require('./models/ChatMessage');
 
 function initSocket(httpServer) {
+  const rawOrigins = process.env.CLIENT_URLS || process.env.CLIENT_URL || '';
+  const allowedOrigins = rawOrigins
+    .split(',')
+    .map(s => s.trim())
+    .filter(Boolean);
+
   const io = new Server(httpServer, {
     cors: {
-      origin: process.env.CLIENT_URL,
+      origin: allowedOrigins.length === 1 ? allowedOrigins[0] : allowedOrigins,
       methods: ['GET', 'POST'],
+      credentials: true,
     },
   });
 
