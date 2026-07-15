@@ -12,7 +12,23 @@ const adminRouter = require('./routes/admin');
 const app = express();
 
 // CORS must be first so all REST routes and the Socket.io upgrade are covered
-app.use(cors({ origin: process.env.CLIENT_URL }));
+const allowedOrigins = (process.env.CLIENT_URLS || '')
+  .split(',')
+  .map(s => s.trim())
+  .filter(Boolean);
+
+app.use(cors({
+  origin: (origin, callback) => {
+    // allow requests with no origin (curl/Postman/server-to-server)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error(`Origin ${origin} not allowed by CORS`));
+    }
+  },
+  credentials: true, // only needed if you use cookies for auth
+}));
+
 app.use(express.json());
 
 // Routes
